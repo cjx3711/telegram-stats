@@ -13,6 +13,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { saveStats } from "../utils/db";
+import { calculateChatDuration } from "../utils/chatDuration";
 
 interface StatsListProps {
   savedStats: StatsEntry[];
@@ -46,7 +47,7 @@ const StatsList: React.FC<StatsListProps> = ({
       <Typography variant="h4" gutterBottom>
         Saved Stats ({savedStats.length})
       </Typography>
-      <Typography variant="body2" color="text.secondary" paragraph>
+      <Typography variant="body2" color="text.secondary">
         Note: All data is stored locally in your browser. If you clear your
         cache or cookies, this data will be lost.
       </Typography>
@@ -61,13 +62,14 @@ const StatsList: React.FC<StatsListProps> = ({
             <ListItem key={stat.id}>
               <ListItemText
                 primary={stat.name}
-                secondary={new Date(stat.date).toLocaleString()}
+                secondary={`${new Date(stat.date).toLocaleString()} · ${
+                  stat.data.length
+                } messages · ${calculateChatDuration(stat.data.totalSpanMs)}`}
               />
               <Button
                 component={Link}
                 to={`/stats/${stat.id}`}
-                startIcon={<VisibilityIcon />}
-              >
+                startIcon={<VisibilityIcon />}>
                 View
               </Button>
               <Button onClick={() => handleEdit(stat)} startIcon={<EditIcon />}>
@@ -76,8 +78,7 @@ const StatsList: React.FC<StatsListProps> = ({
               <Button
                 onClick={() => handleDelete(stat.id)}
                 color="error"
-                startIcon={<DeleteIcon />}
-              >
+                startIcon={<DeleteIcon />}>
                 Delete
               </Button>
             </ListItem>
