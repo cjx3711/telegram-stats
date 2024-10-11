@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Typography, Button } from "@mui/material";
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
+  TooltipItem,
 } from "chart.js";
 import { getStats } from "../utils/db";
 import { StatsEntry } from "../types";
@@ -19,8 +19,7 @@ import { StatsEntry } from "../types";
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
@@ -77,29 +76,68 @@ const Stats: React.FC = () => {
     setEndDate(e.target.value);
   };
 
-  // TODO: Process stats.data to create chart data
+  // Process stats.data to create chart data
   const chartData = {
     labels: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"],
     datasets: [
       {
         label: "Text Messages",
         data: [12, 19, 3, 5, 2, 3, 10],
-        borderColor: "rgb(255, 99, 132)",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
       },
       {
         label: "GIFs",
         data: [2, 3, 1, 4, 2, 6, 3],
-        borderColor: "rgb(53, 162, 235)",
         backgroundColor: "rgba(53, 162, 235, 0.5)",
+      },
+      {
+        label: "Videos",
+        data: [1, 2, 3, 4, 5, 6, 7],
+        backgroundColor: "rgba(255, 206, 86, 0.5)",
+      },
+      {
+        label: "Stickers",
+        data: [1, 2, 3, 4, 5, 6, 7],
+        backgroundColor: "rgba(153, 102, 255, 0.5)",
       },
       {
         label: "Images",
         data: [5, 7, 2, 8, 4, 3, 6],
-        borderColor: "rgb(75, 192, 192)",
         backgroundColor: "rgba(75, 192, 192, 0.5)",
       },
     ],
+  };
+
+  const options = {
+    scales: {
+      x: {
+        stacked: true,
+      },
+      y: {
+        stacked: true,
+      },
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          title: (tooltipItems: TooltipItem<"bar">[]) => {
+            return `Data for ${tooltipItems[0].label}`;
+          },
+          label: (tooltipItem: TooltipItem<"bar">) => {
+            const datasetLabel = tooltipItem.dataset.label || "";
+            const value = tooltipItem.parsed.y;
+            return `${datasetLabel}: ${value}`;
+          },
+          footer: (tooltipItems: TooltipItem<"bar">[]) => {
+            let total = 0;
+            tooltipItems.forEach((tooltipItem) => {
+              total += tooltipItem.parsed.y;
+            });
+            return `Total: ${total}`;
+          },
+        },
+      },
+    },
   };
 
   return (
@@ -112,7 +150,7 @@ const Stats: React.FC = () => {
         <input type="date" value={startDate} onChange={handleStartDateChange} />
         <input type="date" value={endDate} onChange={handleEndDateChange} />
       </Box>
-      <Line data={chartData} />
+      <Bar data={chartData} options={options} />
     </Box>
   );
 };
