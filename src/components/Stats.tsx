@@ -36,6 +36,10 @@ import {
   isAfter,
   parseISO,
   fromUnixTime,
+  startOfYear,
+  endOfYear,
+  subYears,
+  addYears,
 } from "date-fns";
 import { getStats } from "../utils/db";
 import { StatsEntry, ParsedMessage, Participant } from "../types";
@@ -69,7 +73,9 @@ const Stats: React.FC = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState<StatsEntry | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [groupBy, setGroupBy] = useState<"day" | "week" | "month">("day");
+  const [groupBy, setGroupBy] = useState<"day" | "week" | "month" | "year">(
+    "day"
+  );
   const [chartData, setChartData] = useState<ChartData<"bar"> | null>(null);
   const [firstMessageDate, setFirstMessageDate] = useState<Date | null>(null);
   const [lastMessageDate, setLastMessageDate] = useState<Date | null>(null);
@@ -153,7 +159,7 @@ const Stats: React.FC = () => {
     (
       messages: ParsedMessage[],
       end: Date,
-      grouping: "day" | "week" | "month",
+      grouping: "day" | "week" | "month" | "year",
       splitByPerson: boolean
     ) => {
       let startDate: Date;
@@ -162,7 +168,22 @@ const Stats: React.FC = () => {
         data: { [key: string]: number };
       }>;
 
-      if (grouping === "month") {
+      if (grouping === "year") {
+        startDate = startOfYear(subMonths(end, 35)); // Go back 3 years
+        buckets = Array.from({ length: 36 }, (_, i) => ({
+          label: format(addMonths(startDate, i), "MMM yyyy"),
+          data: Object.fromEntries(
+            splitByPerson
+              ? Array.from(new Set(messages.map((m) => m.from))).map(
+                  (person) => [
+                    participants.find((p) => p.id === person)?.name || person,
+                    0,
+                  ]
+                )
+              : Object.values(DisplayCategory).map((cat) => [cat, 0])
+          ),
+        }));
+      } else if (grouping === "month") {
         startDate = startOfMonth(subMonths(end, 11));
         buckets = Array.from({ length: 12 }, (_, i) => ({
           label: format(addMonths(startDate, i), "MMM yyyy"),
@@ -202,11 +223,11 @@ const Stats: React.FC = () => {
         const messageDate = fromUnixTime(parseInt(message.date_unixtime));
         if (isAfter(messageDate, startDate) && isBefore(messageDate, end)) {
           let bucketIndex: number;
-          if (grouping === "month") {
+          if (grouping === "year" || grouping === "month") {
             bucketIndex =
+              (messageDate.getFullYear() - startDate.getFullYear()) * 12 +
               messageDate.getMonth() -
-              startDate.getMonth() +
-              (messageDate.getFullYear() - startDate.getFullYear()) * 12;
+              startDate.getMonth();
           } else {
             bucketIndex = Math.floor(
               (messageDate.getTime() - startDate.getTime()) /
@@ -216,10 +237,10 @@ const Stats: React.FC = () => {
             );
           }
           if (bucketIndex >= 0 && bucketIndex < buckets.length) {
+            const messageFromName = participants.find(
+              (p) => p.id === message.from
+            )?.name;
             if (splitByPerson) {
-              const messageFromName = participants.find(
-                (p) => p.id === message.from
-              )?.name;
               if (
                 messageFromName === mainPerson ||
                 messageFromName === otherPerson
@@ -235,15 +256,23 @@ const Stats: React.FC = () => {
       });
 
       const dataKeys = splitByPerson
-        ? ([mainPerson, otherPerson].filter(Boolean) as string[])
+        ? ([mainPerson, otherPerson].filter(
+            Boolean
+          ) as unknown as Participant[])
         : Object.values(DisplayCategory);
 
       return {
-        labels: buckets.map((b) => b.label),
+        labels: buckets.map((b, index) => {
+          return b.label;
+        }),
         datasets: dataKeys.map((key) => ({
-          label: key,
-          data: buckets.map((b) => b.data[key] || 0),
-          backgroundColor: getColorForCategory(key),
+          label: key instanceof Object ? key.name : key,
+          data: buckets.map(
+            (b) => b.data[key instanceof Object ? key.name : key] || 0
+          ),
+          backgroundColor: getColorForCategory(
+            key instanceof Object ? key.name : key
+          ),
         })),
       };
     },
@@ -257,7 +286,7 @@ const Stats: React.FC = () => {
 
   const handleGroupByChange = (
     event: React.MouseEvent<HTMLElement>,
-    newGroupBy: "day" | "week" | "month" | null
+    newGroupBy: "day" | "week" | "month" | "year" | null
   ) => {
     if (newGroupBy !== null) {
       setGroupBy(newGroupBy);
@@ -281,28 +310,31 @@ const Stats: React.FC = () => {
     switch (groupBy) {
       case "day":
         newDate =
-          direction === "prev" ? subDays(endDate, 30) : addDays(endDate, 30);
+          direction === "prev" ? subDays(endDate, 1) : addDays(endDate, 1);
         break;
       case "week":
         newDate =
-          direction === "prev" ? subWeeks(endDate, 12) : addWeeks(endDate, 12);
+          direction === "prev" ? subWeeks(endDate, 1) : addWeeks(endDate, 1);
         break;
       case "month":
         newDate =
-          direction === "prev"
-            ? subMonths(endDate, 12)
-            : addMonths(endDate, 12);
+          direction === "prev" ? subMonths(endDate, 1) : addMonths(endDate, 1);
         newDate = endOfMonth(newDate);
+        break;
+      case "year":
+        newDate =
+          direction === "prev" ? subYears(endDate, 1) : addYears(endDate, 1);
+        newDate = endOfYear(newDate);
         break;
     }
 
     // Prevent navigating beyond data range
     if (direction === "prev" && isBefore(newDate, firstMessageDate)) {
       newDate =
-        groupBy === "month" ? endOfMonth(firstMessageDate) : firstMessageDate;
+        groupBy === "year" ? endOfYear(firstMessageDate) : firstMessageDate;
     } else if (direction === "next" && isAfter(newDate, lastMessageDate)) {
       newDate =
-        groupBy === "month" ? endOfMonth(lastMessageDate) : lastMessageDate;
+        groupBy === "year" ? endOfYear(lastMessageDate) : lastMessageDate;
     }
 
     setEndDate(newDate);
@@ -312,6 +344,11 @@ const Stats: React.FC = () => {
     scales: {
       x: {
         stacked: splitBy === "type",
+        ticks: {
+          autoSkip: true,
+          maxRotation: 90,
+          minRotation: 0,
+        },
       },
       y: {
         stacked: splitBy === "type",
@@ -403,13 +440,16 @@ const Stats: React.FC = () => {
           onChange={handleGroupByChange}
           aria-label="group by">
           <ToggleButton value="day" aria-label="day">
-            Day
+            30 Days
           </ToggleButton>
           <ToggleButton value="week" aria-label="week">
-            Week
+            12 Weeks
           </ToggleButton>
           <ToggleButton value="month" aria-label="month">
-            Month
+            12 Months
+          </ToggleButton>
+          <ToggleButton value="year" aria-label="year">
+            3 Years
           </ToggleButton>
         </ToggleButtonGroup>
         <ToggleButtonGroup
