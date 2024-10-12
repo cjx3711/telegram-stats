@@ -10,26 +10,18 @@ import {
   Typography,
 } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
-import { useCallback, useEffect, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { Link, Route, Routes, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, Route, Routes } from "react-router-dom";
 import LandingPage from "./components/LandingPage";
 import Start from "./components/Start";
 import Stats from "./components/Stats";
 import { StatsEntry } from "./types";
-import {
-  deleteStats,
-  generateUniqueId,
-  getAllStats,
-  saveStats,
-} from "./utils/db";
-import { parseMessages } from "./utils/processData";
+import { deleteStats, getAllStats } from "./utils/db";
 
 const theme = createTheme();
 
 function App() {
   const [savedStats, setSavedStats] = useState<StatsEntry[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const loadSavedStats = async () => {
@@ -38,70 +30,6 @@ function App() {
     };
     loadSavedStats();
   }, []);
-
-  const onDrop = useCallback(
-    async (acceptedFiles: File[]) => {
-      const file = acceptedFiles[0];
-      if (file) {
-        const fileContent = await file.text();
-        const parsedStats = JSON.parse(fileContent);
-
-        if (parsedStats.type !== "personal_chat") {
-          alert("This tool only supports personal chats for now.");
-          return;
-        }
-
-        // Check that the keys name, type, id, messages exist
-        if (
-          !parsedStats.name ||
-          !parsedStats.type ||
-          !parsedStats.id ||
-          !parsedStats.messages
-        ) {
-          alert("Invalid file format.");
-          return;
-        }
-
-        // Check that the messages array is not empty
-        if (parsedStats.messages.length === 0) {
-          alert("No messages found in the file.");
-          return;
-        }
-
-        const {
-          participants,
-          messages,
-          totalSpanMs,
-          firstMessageTimestamp,
-          lastMessageTimestamp,
-        } = parseMessages(parsedStats.messages);
-
-        console.log(totalSpanMs, firstMessageTimestamp, lastMessageTimestamp);
-        // Get the name from the file
-        const newEntry: StatsEntry = {
-          id: generateUniqueId(),
-          name: parsedStats.name,
-          date: new Date().toISOString(),
-          data: {
-            participants,
-            messages,
-            length: messages.length,
-            totalSpanMs,
-            firstMessageTimestamp,
-            lastMessageTimestamp,
-          },
-        };
-
-        await saveStats(newEntry);
-        setSavedStats((prevStats) => [...prevStats, newEntry]);
-
-        if (confirm("Open the new stats entry?")) {
-          navigate(`/stats/${newEntry.id}`);
-        }
-      }
-    },
-    [navigate]
-  );
 
   const handleDelete = async (id: string) => {
     await deleteStats(id);

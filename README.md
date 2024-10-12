@@ -23,8 +23,8 @@ Telegram Stats Viewer is a web application that allows users to analyze and visu
 
 ### Prerequisites
 
-- Node.js (version 14 or higher recommended)
-- npm or yarn
+- Node.js (version 18 or higher recommended)
+- yarn
 
 ### Installation
 
