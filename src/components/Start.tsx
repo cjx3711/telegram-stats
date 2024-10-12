@@ -103,7 +103,7 @@ function Start({ savedStats, onDelete, onUpdate }: StartProps) {
           <li>Click on the three dots on the top right</li>
           <li>Choose "Export chat history"</li>
           <li>Uncheck all the options</li>
-          <li>Choose "Machine-readable JSON" format</li>
+          <li>Choose "Machine-readable JSON" format near the "Format" word at the bottom highlighted in blue</li>
           <li>Click "Export" and wait for the process to complete</li>
           <li>Upload the result.json file here</li>
         </ol>
