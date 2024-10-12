@@ -1,50 +1,80 @@
-# React + TypeScript + Vite
+# Telegram Stats Viewer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Telegram Stats Viewer is a web application that allows users to analyze and visualize their personal Telegram chat statistics. This tool processes Telegram chat export files locally in the browser, providing insights into message trends, chat duration, and more.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Upload and process Telegram chat export files (JSON format)
+- Visualize message statistics with interactive charts
+- Analyze message trends over time (daily, weekly, monthly, yearly)
+- Compare message types (text, media, stickers, files)
+- View statistics by person or message type
+- Secure local processing (no data transmitted or stored externally)
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Prerequisites
 
-- Configure the top-level `parserOptions` property like this:
+- Node.js (version 14 or higher recommended)
+- npm or yarn
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### Installation
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+1. Clone the repository:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+   ```
+   git clone https://github.com/cjx3711/telegram-stats.git
+   cd telegram-stats
+   ```
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+2. Install dependencies:
+
+   ```
+   yarn
+   ```
+
+3. Start the development server:
+
+   ```
+   yarn dev
+   ```
+
+4. Open your browser and navigate to `http://localhost:2013`
+
+## Usage
+
+1. Export your Telegram chat history:
+
+   - Open Telegram Desktop
+   - Select the chat you want to analyze
+   - Click on the three dots menu and choose "Export chat history"
+   - Uncheck all options and select "Machine-readable JSON" format
+   - Click "Export" and wait for the process to complete
+
+2. Upload the exported JSON file to the Telegram Stats Viewer
+
+3. Explore your chat statistics using the interactive charts and filters
+
+## Technologies Used
+
+- React
+- TypeScript
+- Vite
+- Chart.js
+- Material-UI
+- date-fns
+
+## Contributing
+
+If you want to contribute that'll be great! But I have no plans to maintain this project.
+
+## License
+
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License - see the [LICENSE](LICENSE) file for details.
+
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+
+## Acknowledgements
+
+- Created by [CJX3711](https://github.com/cjx3711)
+- Inspired by my friend needing a simple way to analyse the messages from the various people they've been dating.

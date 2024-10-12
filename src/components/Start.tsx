@@ -1,4 +1,4 @@
-import { Box, Paper, Typography } from "@mui/material";
+import { Alert, Box, Divider, Paper, Typography } from "@mui/material";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import StatsList from "./StatsList";
 import { StatsEntry } from "../types";
 import { generateUniqueId, saveStats } from "../utils/db";
 import { parseMessages } from "../utils/processData";
+import { Info } from "@mui/icons-material";
 
 interface StartProps {
   savedStats: StatsEntry[];
@@ -107,15 +108,18 @@ function Start({ savedStats, onDelete, onUpdate }: StartProps) {
           <li>Upload the result.json file here</li>
         </ol>
       </Typography>
-      <Typography variant="body1">
-        Note: This only supports personal chats for now. <br />
-        This tool is not affiliated with Telegram in any way.
-      </Typography>
+      <Alert icon={<Info />} severity="info">
+        Note: This only supports personal chats for now.
+      </Alert>
       <Paper
         {...getRootProps()}
         sx={{
           p: 3,
-          mb: 3,
+          my: 3,
+          minHeight: "200px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           backgroundColor: isDragActive ? "action.hover" : "background.paper",
           border: "2px dashed",
           borderColor: isDragActive ? "primary.main" : "grey.400",
@@ -128,6 +132,7 @@ function Start({ savedStats, onDelete, onUpdate }: StartProps) {
             : "Drag 'n' drop your Telegram export JSON file here, or click to select one"}
         </Typography>
       </Paper>
+      <Divider sx={{ my: 6 }} />
       <StatsList
         savedStats={savedStats}
         onDelete={onDelete}

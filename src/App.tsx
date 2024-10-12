@@ -13,8 +13,9 @@ import { createTheme } from "@mui/material/styles";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Link, Route, Routes, useNavigate } from "react-router-dom";
+import LandingPage from "./components/LandingPage";
+import Start from "./components/Start";
 import Stats from "./components/Stats";
-import StatsList from "./components/StatsList";
 import { StatsEntry } from "./types";
 import {
   deleteStats,
@@ -23,8 +24,6 @@ import {
   saveStats,
 } from "./utils/db";
 import { parseMessages } from "./utils/processData";
-import LandingPage from "./components/LandingPage";
-import Start from "./components/Start";
 
 const theme = createTheme();
 
@@ -93,8 +92,6 @@ function App() {
           },
         };
 
-        console.log(newEntry);
-
         await saveStats(newEntry);
         setSavedStats((prevStats) => [...prevStats, newEntry]);
 
@@ -105,11 +102,6 @@ function App() {
     },
     [navigate]
   );
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: { "application/json": [".json"] },
-  });
 
   const handleDelete = async (id: string) => {
     await deleteStats(id);
@@ -168,10 +160,11 @@ function App() {
           elevation={3}>
           <Container maxWidth="lg">
             <Typography variant="body2" color="text.secondary" align="center">
-              © {new Date().getFullYear()} Telegram Stats Viewer. Made
-              haphazardly by{" "}
+              © {new Date().getFullYear()} Telegram Stats Viewer.
+              <br />
+              Made haphazardly by{" "}
               <a
-                href="https://github.com/CJX3711"
+                href="https://github.com/cjx3711"
                 target="_blank"
                 rel="noopener noreferrer">
                 CJX3711
