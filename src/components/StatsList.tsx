@@ -14,6 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { saveStats } from "../utils/db";
 import { calculateChatDuration } from "../utils/chatDuration";
+import { format } from "date-fns";
 
 interface StatsListProps {
   savedStats: StatsEntry[];
@@ -62,7 +63,7 @@ const StatsList: React.FC<StatsListProps> = ({
             <ListItem key={stat.id}>
               <ListItemText
                 primary={stat.name}
-                secondary={`${new Date(stat.date).toLocaleString()} · ${
+                secondary={`${format(new Date(stat.date), "yyyy-MM-dd")} · ${
                   stat.data.length
                 } messages · ${calculateChatDuration(stat.data.totalSpanMs)}`}
               />

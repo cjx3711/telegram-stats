@@ -8,6 +8,10 @@ export enum MessageType {
   Gif = "gif",
   File = "file",
   Link = "link",
+  Location = "location",
+  PhoneCall = "phone_call",
+  PinMessage = "pin_message",
+  Contact = "contact",
   VideoMessage = "video_message",
   VoiceMessage = "voice_message",
   Unknown = "unknown",
@@ -25,6 +29,10 @@ export type RawMessage = {
     type: string;
     text: string;
   }[];
+  action?: string;
+  location_information?: unknown;
+  contact_information?: unknown;
+  photo?: string;
   file?: string;
   file_name?: string;
   thumbnail?: string;
@@ -51,6 +59,11 @@ export function parseMessages(messages: RawMessage[]): {
     if (message.media_type === "animation") return MessageType.Gif;
     if (message.media_type === "video_message") return MessageType.VideoMessage;
     if (message.media_type === "voice_message") return MessageType.VoiceMessage;
+    if (message.action === "phone_call") return MessageType.PhoneCall;
+    if (message.action === "pin_message") return MessageType.PinMessage;
+    if (message.contact_information) return MessageType.Contact;
+    if (message.location_information) return MessageType.Location;
+    if (message.photo?.includes("not included")) return MessageType.Image;
     if (message.mime_type?.startsWith("image/")) return MessageType.Image;
     if (message.mime_type?.startsWith("video/")) return MessageType.Video;
     if (message.file) return MessageType.File;
@@ -64,7 +77,6 @@ export function parseMessages(messages: RawMessage[]): {
     if (typeof text !== "string") return 0;
     return text.trim().split(/\s+/).length;
   };
-
   const parsedMessages = messages.map((message) => {
     // Normalize participant
     if (!participants[message.from_id]) {

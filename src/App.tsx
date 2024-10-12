@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import LandingPage from "./components/LandingPage";
 import Start from "./components/Start";
@@ -23,13 +23,14 @@ const theme = createTheme();
 function App() {
   const [savedStats, setSavedStats] = useState<StatsEntry[]>([]);
 
-  useEffect(() => {
-    const loadSavedStats = async () => {
-      const stats = await getAllStats();
-      setSavedStats(stats);
-    };
-    loadSavedStats();
+  const loadSavedStats = useCallback(async () => {
+    const stats = await getAllStats();
+    setSavedStats(stats);
   }, []);
+
+  useEffect(() => {
+    loadSavedStats();
+  }, [loadSavedStats]);
 
   const handleDelete = async (id: string) => {
     await deleteStats(id);
@@ -37,9 +38,20 @@ function App() {
   };
 
   const handleUpdateStat = (updatedStat: StatsEntry) => {
-    setSavedStats((prevStats) =>
-      prevStats.map((stat) => (stat.id === updatedStat.id ? updatedStat : stat))
-    );
+    setSavedStats((prevStats) => {
+      const existingStatIndex = prevStats.findIndex(
+        (stat) => stat.id === updatedStat.id
+      );
+      if (existingStatIndex >= 0) {
+        // Update existing stat
+        return prevStats.map((stat) =>
+          stat.id === updatedStat.id ? updatedStat : stat
+        );
+      } else {
+        // Add new stat
+        return [...prevStats, updatedStat];
+      }
+    });
   };
 
   return (
@@ -75,6 +87,7 @@ function App() {
                   savedStats={savedStats}
                   onDelete={handleDelete}
                   onUpdate={handleUpdateStat}
+                  onReload={loadSavedStats}
                 />
               }
             />
