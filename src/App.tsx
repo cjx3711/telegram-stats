@@ -23,6 +23,8 @@ import {
   saveStats,
 } from "./utils/db";
 import { parseMessages } from "./utils/processData";
+import LandingPage from "./components/LandingPage";
+import Start from "./components/Start";
 
 const theme = createTheme();
 
@@ -145,65 +147,15 @@ function App() {
 
         <Container component="main" sx={{ mt: 4, mb: 4, flex: 1 }}>
           <Routes>
+            <Route path="/" element={<LandingPage />} />
             <Route
-              path="/"
+              path="/start"
               element={
-                <Box>
-                  <Typography variant="h4" gutterBottom>
-                    Upload Telegram Export
-                  </Typography>
-                  <Typography variant="body1">
-                    To retrieve your Telegram export:
-                    <ol>
-                      <li>
-                        Open{" "}
-                        <a
-                          href="https://desktop.telegram.org/"
-                          target="_blank"
-                          rel="noopener noreferrer">
-                          Telegram Desktop
-                        </a>
-                      </li>
-                      <li>Click on the chat you want to export</li>
-                      <li>Click on the three dots on the top right</li>
-                      <li>Choose "Export chat history"</li>
-                      <li>Uncheck all the options</li>
-                      <li>Choose "Machine-readable JSON" format</li>
-                      <li>
-                        Click "Export" and wait for the process to complete
-                      </li>
-                      <li>Upload the result.json file here</li>
-                    </ol>
-                  </Typography>
-                  <Typography variant="body1">
-                    Note: This only supports personal chats for now. <br />
-                    This tool is not affiliated with Telegram in any way.
-                  </Typography>
-                  <Paper
-                    {...getRootProps()}
-                    sx={{
-                      p: 3,
-                      mb: 3,
-                      backgroundColor: isDragActive
-                        ? "action.hover"
-                        : "background.paper",
-                      border: "2px dashed",
-                      borderColor: isDragActive ? "primary.main" : "grey.400",
-                      cursor: "pointer",
-                    }}>
-                    <input {...getInputProps()} />
-                    <Typography>
-                      {isDragActive
-                        ? "Drop the Telegram export JSON file here"
-                        : "Drag 'n' drop your Telegram export JSON file here, or click to select one"}
-                    </Typography>
-                  </Paper>
-                  <StatsList
-                    savedStats={savedStats}
-                    onDelete={handleDelete}
-                    onUpdate={handleUpdateStat}
-                  />
-                </Box>
+                <Start
+                  savedStats={savedStats}
+                  onDelete={handleDelete}
+                  onUpdate={handleUpdateStat}
+                />
               }
             />
             <Route path="/stats/:id" element={<Stats />} />
@@ -216,8 +168,15 @@ function App() {
           elevation={3}>
           <Container maxWidth="lg">
             <Typography variant="body2" color="text.secondary" align="center">
-              © {new Date().getFullYear()} Telegram Stats Viewer. All rights
-              reserved.
+              © {new Date().getFullYear()} Telegram Stats Viewer. Made
+              haphazardly by{" "}
+              <a
+                href="https://github.com/CJX3711"
+                target="_blank"
+                rel="noopener noreferrer">
+                CJX3711
+              </a>
+              .
             </Typography>
           </Container>
         </Paper>

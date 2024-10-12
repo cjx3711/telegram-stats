@@ -1,48 +1,47 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import {
   Box,
-  Typography,
   Button,
-  ButtonGroup,
   IconButton,
   ToggleButton,
   ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
-import { Bar } from "react-chartjs-2";
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
   BarElement,
+  CategoryScale,
+  ChartData,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
   Title,
   Tooltip,
-  Legend,
   TooltipItem,
-  ChartData,
 } from "chart.js";
 import {
-  startOfMonth,
-  endOfMonth,
-  subMonths,
-  addMonths,
-  subWeeks,
-  addWeeks,
-  subDays,
   addDays,
-  format,
-  isBefore,
-  isAfter,
-  parseISO,
-  fromUnixTime,
-  startOfYear,
-  endOfYear,
-  subYears,
+  addMonths,
+  addWeeks,
   addYears,
+  endOfMonth,
+  endOfYear,
+  format,
+  fromUnixTime,
+  isAfter,
+  isBefore,
+  parseISO,
+  startOfMonth,
+  startOfYear,
+  subDays,
+  subMonths,
+  subWeeks,
+  subYears,
 } from "date-fns";
+import React, { useCallback, useEffect, useState } from "react";
+import { Bar } from "react-chartjs-2";
+import { useNavigate, useParams } from "react-router-dom";
+import { ParsedMessage, Participant, StatsEntry } from "../types";
 import { getStats } from "../utils/db";
-import { StatsEntry, ParsedMessage, Participant } from "../types";
 
 // Register Chart.js components
 ChartJS.register(
@@ -62,11 +61,6 @@ enum DisplayCategory {
   File = "File",
   Other = "Other",
 }
-
-type Bucket = {
-  label: string;
-  types: { [key in DisplayCategory]: number };
-};
 
 const Stats: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -262,7 +256,7 @@ const Stats: React.FC = () => {
         : Object.values(DisplayCategory);
 
       return {
-        labels: buckets.map((b, index) => {
+        labels: buckets.map((b) => {
           return b.label;
         }),
         datasets: dataKeys.map((key) => ({
@@ -285,7 +279,7 @@ const Stats: React.FC = () => {
   };
 
   const handleGroupByChange = (
-    event: React.MouseEvent<HTMLElement>,
+    _: React.MouseEvent<HTMLElement>,
     newGroupBy: "day" | "week" | "month" | "year" | null
   ) => {
     if (newGroupBy !== null) {
@@ -294,7 +288,7 @@ const Stats: React.FC = () => {
   };
 
   const handleSplitByChange = (
-    event: React.MouseEvent<HTMLElement>,
+    _: React.MouseEvent<HTMLElement>,
     newSplitBy: "type" | "person" | null
   ) => {
     if (newSplitBy !== null) {
