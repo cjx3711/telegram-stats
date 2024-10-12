@@ -2,9 +2,11 @@ import {
   Alert,
   Box,
   Button,
+  Chip,
   CircularProgress,
   Divider,
   Paper,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useCallback, useState } from "react";
@@ -14,7 +16,11 @@ import StatsList from "./StatsList";
 import { StatsEntry } from "../types";
 import { generateUniqueId, saveStats } from "../utils/db";
 import { parseMessages } from "../utils/processData";
-import { Info } from "@mui/icons-material";
+import {
+  Info,
+  QuestionAnswer,
+  QuestionMarkOutlined,
+} from "@mui/icons-material";
 import { format } from "date-fns";
 
 interface StartProps {
@@ -126,6 +132,13 @@ function Start({ savedStats, onDelete, onUpdate, onReload }: StartProps) {
               rel="noopener noreferrer">
               Telegram Desktop
             </a>
+            <Tooltip title="Only telegram desktop allows JSON exports. And that way you can be sure we have no way to secretly access your data.">
+              <Chip
+                label="Why?"
+                sx={{ ml: 1, verticalAlign: "middle", cursor: "help" }}
+                size="small"
+              />
+            </Tooltip>
           </li>
           <li>Click on the chat you want to export</li>
           <li>Click on the three dots on the top right</li>
