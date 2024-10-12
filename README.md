@@ -11,6 +11,14 @@ Telegram Stats Viewer is a web application that allows users to analyze and visu
 - View statistics by person or message type
 - Secure local processing (no data transmitted or stored externally)
 
+## Screenshots
+
+![Home](readme_pics/home.png)
+
+![Stats](readme_pics/stats.png)
+
+![Stats 2](readme_pics/stats2.png)
+
 ## Getting Started
 
 ### Prerequisites
