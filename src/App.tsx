@@ -1,5 +1,6 @@
 import TelegramIcon from "@mui/icons-material/Telegram";
 import {
+  Alert,
   AppBar,
   Box,
   Container,
@@ -8,6 +9,7 @@ import {
   ThemeProvider,
   Toolbar,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { useEffect, useState, useCallback } from "react";
@@ -22,6 +24,7 @@ const theme = createTheme();
 
 function App() {
   const [savedStats, setSavedStats] = useState<StatsEntry[]>([]);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const loadSavedStats = useCallback(async () => {
     const stats = await getAllStats();
@@ -76,6 +79,13 @@ function App() {
             </Typography>
           </Toolbar>
         </AppBar>
+
+        {isSmallScreen && (
+          <Alert severity="warning" sx={{ mt: 2, mx: 2 }}>
+            This app works best on a computer. You'll need to use Telegram
+            Desktop to export your data.
+          </Alert>
+        )}
 
         <Container component="main" sx={{ mt: 4, mb: 4, flex: 1 }}>
           <Routes>

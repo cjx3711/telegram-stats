@@ -1,3 +1,4 @@
+import { Info } from "@mui/icons-material";
 import {
   Alert,
   Box,
@@ -9,19 +10,14 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { format } from "date-fns";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
-import StatsList from "./StatsList";
 import { StatsEntry } from "../types";
 import { generateUniqueId, saveStats } from "../utils/db";
 import { parseMessages } from "../utils/processData";
-import {
-  Info,
-  QuestionAnswer,
-  QuestionMarkOutlined,
-} from "@mui/icons-material";
-import { format } from "date-fns";
+import StatsList from "./StatsList";
 
 interface StartProps {
   savedStats: StatsEntry[];
