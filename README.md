@@ -72,6 +72,25 @@ Telegram Stats Viewer is a web application that allows users to analyze and visu
 - Material-UI
 - date-fns
 
+## Deployment
+
+Create a `.env` file with the following:
+
+```
+REMOTE_DIR=<user>@<host>:/<path>/
+```
+
+Then run `yarn build:push` to build and deploy the project.
+
+Move the `serve.sh` file to the same folder and run it to serve the site using pm2.
+
+### Requirements:
+
+- Linux-based system (tested on Ubuntu 20)
+- Node.js 18+
+- pm2 (will be installed if it's not already)
+- serve (will be installed if it's not already)
+
 ## Contributing
 
 If you want to contribute that'll be great! But I have no plans to maintain this project.
